@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Whisper Test</title>
+</head>
+<body>
+<h2>Whisper Test</h2>
+<button id="start">録音開始</button>
+<button id="stop">録音停止</button>
+<p id="result"></p>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+
+const startBtn = document.getElementById('start');
+const stopBtn = document.getElementById('stop');
+const resultEl = document.getElementById('result');
+
+startBtn.onclick = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.start();
+};
+
+stopBtn.onclick = async () => {
+  if (!mediaRecorder) return;
+  mediaRecorder.stop();
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+    const formData = new FormData();
+    formData.append('audio', blob, 'audio.wav');
+
+    const res = await fetch('https://<your-fly-app>.fly.dev/transcribe', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    resultEl.textContent = data.text || '認識できませんでした';
+  };
+};
+</script>
+</body>
+</html>

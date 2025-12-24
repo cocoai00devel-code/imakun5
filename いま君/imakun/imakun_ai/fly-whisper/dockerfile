@@ -1,0 +1,25 @@
+# ベースイメージは Python + Node.js
+FROM python:3.11-slim
+
+# Node.jsインストール
+RUN apt-get update && apt-get install -y curl ffmpeg build-essential \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリ
+WORKDIR /app
+
+# Python依存
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Node.js依存
+COPY package*.json ./
+RUN npm install
+
+# アプリコピー
+COPY . .
+
+EXPOSE 3001
+CMD ["npm", "start"]

@@ -1,0 +1,15 @@
+app = "fly-whisper"
+
+[build]
+  builder = "heroku/buildpacks:20"
+
+[env]
+  PORT = "3001"
+
+[experimental]
+  allowed_public_ports = [3001]
+  auto_rollback = true
+
+[machines]
+  type = "shared-cpu-1x"  # ここで軽量 CPU インスタンスを指定
+  memory = 512

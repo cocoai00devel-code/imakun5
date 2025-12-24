@@ -1,0 +1,9 @@
+{
+  "name": "fly-whisper",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "whisper-node.js",
+  "scripts": {
+    "start": "node whisper-node.js"
+  }
+}
